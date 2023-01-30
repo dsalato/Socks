@@ -12,7 +12,8 @@ Vue.component('product', {
                 <p v-if="inStock">In stock</p>
                 <p v-else :class="{outOfStock: !inStock }">Out of Stock</p>
     
-                <product-details></product-details>
+                <product-details :details='details'></product-details>
+                
                 <p>Shipping: {{ shipping }}</p>
                 <div class="color-box"
                      v-for="(variant, index) in variants"
@@ -53,7 +54,7 @@ Vue.component('product', {
             selectedVariant: 0,
             onSale:true,
             altText: "A pair of socks",
-
+            details: ['80% cotton', '20% polyester', 'Gender-neutral'],
             variants: [
                 {
                     variantId: 2234,
@@ -118,11 +119,11 @@ Vue.component('product-details', {
             </ul>
 
         </div>`,
-    data() {
-        return {
-            details: ['80% cotton', '20% polyester', 'Gender-neutral'],
+    props: {
+        details: {
+            type: Array,
         }
-    },
+    }
 })
 
 let app = new Vue({
