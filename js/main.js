@@ -26,6 +26,19 @@ Vue.component('product', {
                 <ul>
                     <li v-for="size in sizes">{{ size }}</li>
                 </ul>
+                <div>
+                    <h2>Reviews</h2>
+                    <p v-if="!reviews.length">There are no reviews yet.</p>
+                    <ul>
+                        <li v-for="review in reviews">
+                            <p>{{ review.name }}</p>
+                            <p>Rating: {{ review.rating }}</p>
+                            <p>Recommedation: {{ review.recommedation}}</p>
+                            <p>{{ review.review }}</p>
+                        </li>
+                    </ul>
+                </div>
+                <product-review @review-submitted="addReview"></product-review>
 
                 <button v-on:click="addToCart"
                             :disabled="!inStock"
@@ -53,6 +66,7 @@ Vue.component('product', {
             brand: 'Vue Mastery',
             selectedVariant: 0,
             onSale:true,
+            reviews: [],
             altText: "A pair of socks",
             details: ['80% cotton', '20% polyester', 'Gender-neutral'],
             variants: [
@@ -88,6 +102,10 @@ Vue.component('product', {
         updateProduct(index) {
             this.selectedVariant = index;
         },
+        addReview(productReview) {
+            this.reviews.push(productReview)
+        }
+
     },
     computed: {
         title() {
@@ -127,6 +145,89 @@ Vue.component('product-details', {
         }
     }
 })
+Vue.component('product-review', {
+    template: `
+
+   <form class="review-form" @submit.prevent="onSubmit">
+      
+        <p v-if="errors.length">
+            <b>Please correct the following error(s):</b>
+            <ul>
+                <li v-for="error in errors">{{ error }}</li>
+            </ul>
+        </p>
+
+        <p>
+            <label for="name">Name:</label>
+            <input id="name" v-model="name" placeholder="name">
+        </p>
+    
+        <p>
+            <label for="review">Review:</label>
+            <textarea id="review" v-model="review"></textarea>
+        </p>
+        <p>
+            <p>Would you recommend this product?</p>
+            <label for="recommendation">yes:</label>
+            <input type="radio" name="type" id="recommendation" value="yes" v-model="recommedation" >
+            
+             <label for="recommendation2">no:</label>
+            <input type="radio" name="type" id="recommendation2" value="no" v-model="recommedation" >
+        </p>
+        <p>
+            <label for="rating">Rating:</label>
+            <select id="rating" v-model.number="rating">
+                 <option>5</option>
+                 <option>4</option>
+                 <option>3</option>
+                 <option>2</option>
+                 <option>1</option>
+            </select>
+        </p>
+    
+        <p>
+            <input type="submit" value="Submit"> 
+        </p>
+
+    </form>
+
+ `,
+    data() {
+        return {
+            name: null,
+            review: null,
+            rating: null,
+            recommedation: null,
+            errors: []
+        }
+
+    },
+    methods: {
+        onSubmit() {
+            if(this.name && this.review && this.rating && this.recommedation) {
+                let productReview = {
+                    name: this.name,
+                    review: this.review,
+                    rating: this.rating,
+                    recommedation: this.recommedation
+                }
+                this.$emit('review-submitted', productReview)
+                this.name = null
+                this.review = null
+                this.rating = null
+                this.recommedation = null
+            } else {
+                if(!this.name) this.errors.push("Name required.")
+                if(!this.review) this.errors.push("Review required.")
+                if(!this.recommedation) this.errors.push("Recommedation required.")
+                if(!this.rating) this.errors.push("Rating required.")
+
+            }
+        }
+
+    }
+})
+
 
 let app = new Vue({
     el: '#app',
