@@ -14,10 +14,8 @@ Vue.component('product', {
                 <p v-if="inStock">In stock</p>
                 <p v-else :class="{outOfStock: !inStock }">Out of Stock</p>
                 <product-info :shipping="shipping" :details = 'details' ></product-info>
-                
-                
-                
-                
+
+
                 <div class="color-box"
                      v-for="(variant, index) in variants"
                      :key="variant.variantId"
@@ -25,12 +23,13 @@ Vue.component('product', {
                      @mouseover="updateProduct(index)"
                 >
                 </div>
-    
-                <ul>
-                    <li v-for="size in sizes">{{ size }}</li>
-                </ul>
                 
+                <select>
+                    <option v-for="size in sizes">{{ size }}</option>
+                </select>
+
                 
+                <div>
 
                 <button v-on:click="addToCart"
                             :disabled="!inStock"
@@ -38,6 +37,7 @@ Vue.component('product', {
                 >Add to cart</button>
     
                 <button v-on:click="remoteToCart">Remote to cart</button>
+                </div>
                 <product-tabs :reviews="reviews"></product-tabs>
             </div>
        </div>
@@ -66,14 +66,16 @@ Vue.component('product', {
                     variantId: 2234,
                     variantColor: 'green',
                     variantImage: "./assets/vmSocks-green-onWhite.jpg",
-                    variantQuantity: 10
+                    variantQuantity: 10,
+
 
                 },
                 {
                     variantId: 2235,
                     variantColor: 'blue',
                     variantImage: "./assets/vmSocks-blue-onWhite.jpg",
-                    variantQuantity: 5
+                    variantQuantity: 5,
+
 
                 }
             ],
@@ -131,13 +133,32 @@ Vue.component('product-details', {
             <ul>
                 <li v-for="detail in details">{{detail}}</li>
             </ul>
+            <form  @submit.prevent="addDetails">
+                <label for="name">Details:</label>
+                <input id="name" v-model="name"  placeholder="name">
+                <input type="submit" value="Submit"> 
+            </form>
+
+       </div>
+
+       </div>
+
 
         </div>`,
+
     props: {
         details: {
             type: Array,
         }
+    },
+    methods: {
+        addDetails(){
+
+            this.details.push(name)
+
+        }
     }
+
 })
 Vue.component('product-review', {
     template: `
@@ -277,10 +298,9 @@ Vue.component('product-info', {
        <div v-show="selectedInfo === 'Shipping'">
             <p>Shipping: {{ shipping }} </p>
        </div>
+       
        <div v-show="selectedInfo === 'Details'">
             <product-details :details = 'details'></product-details>
-            
-            
        </div>
  
    </div>
@@ -314,12 +334,12 @@ let app = new Vue({
     methods: {
         updateCart(id) {
             this.cart.push(id);
-            console.log(this.cart)
+
         },
         removeCart(id){
             if( this.cart.includes(id)){
                 this.cart.splice(this.cart.indexOf(id), 1)
-                console.log(this.cart)
+
             }
 
         }
